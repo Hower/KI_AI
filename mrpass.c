@@ -18,9 +18,18 @@ struct _vertices{
     *path campuses;
 };
 
+typedef struct _queue{
+    *path data;
+    int head;
+    int tail;
+} queue;
+
 typedef struct _vertices *vertices;
 
 vertices ownedVertices(void);
+void push(queue q, int item);
+void pop(queue q);
+path peek(queue q);
 
 action decideAction (Game g) {
     
@@ -40,4 +49,12 @@ action decideAction (Game g) {
 }
 
 vertices ownedVertices(void){
+    vertices out = malloc(sizeof(struct _vertices));
+    vertices->campuses = malloc(sizeof(path) * 54);
     
+    queue q;
+    q.head = 0;
+    q.tail = 0;
+    q.data = malloc(sizeof(path)*10000);
+
+
