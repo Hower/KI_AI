@@ -33,11 +33,11 @@ typedef struct _vertices *vertices;
 coordinate coordinateFromPath(path requestPath);
 int directionToIndex(char direction);
 vertices ownedVertices(void, game g);
-void push(queue q, path item);
-void pop(queue q);
-path peek(queue q);
-int empty(queue q);
-path append(path p, char item);
+void push(queue q, path item);//adds item to the back of the queue
+void pop(queue q);//removes the item at the front of the queue
+path peek(queue q);//returns the item at the front of the queue
+int empty(queue q);//returns whether queue is empty
+path append(path p, char item);//adds item to the end of p
 
 action decideAction (Game g) {
 
@@ -58,8 +58,9 @@ action decideAction (Game g) {
 
 vertices ownedVertices(void, game g){
     vertices out = malloc(sizeof(struct _vertices));
-    vertices->campuses = malloc(sizeof(path) * 54);
-    
+    out->campuses = malloc(sizeof(path) * 54);
+    out->len = 0;
+
     //initialise queue
     queue q;
     q.head = 0;
@@ -97,7 +98,9 @@ vertices ownedVertices(void, game g){
                 
                 if(valid){
                     if(getCampus(g, cur) = getWhoseTurn(g)){
-
+                        out->campuses[++len];
+                    }
+                }
             }
         }
     }
