@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "Game.h"
 #include "mechanicalTurk.h"
@@ -33,10 +34,10 @@ typedef struct _vertices *vertices;
 coordinate coordinateFromPath(path requestPath);
 int directionToIndex(char direction);
 vertices ownedVertices(void, game g);
-void push(queue q, path item);//adds item to the back of the queue
-void pop(queue q);//removes the item at the front of the queue
-path peek(queue q);//returns the item at the front of the queue
-int empty(queue q);//returns whether queue is empty
+void push(queue *q, path item);//adds item to the back of the queue
+void pop(queue *q);//removes the item at the front of the queue
+path peek(queue *q);//returns the item at the front of the queue
+int empty(queue *q);//returns whether queue is empty
 path append(path p, char item);//adds item to the end of p
 
 action decideAction (Game g) {
@@ -56,6 +57,31 @@ action decideAction (Game g) {
     return nextAction;
 }
 
+void push(queue *q, path item){
+    q->data[tail++] = item;
+    return;
+}
+
+void pop(queue *q){
+    q->head++;
+    return;
+}
+
+path peek(queue *q){
+    return q->data[head];
+}
+
+int empty(queue *q){
+    return q->head == q->tail;
+}
+
+path append(path p, char item){
+    len = strlen(p);
+    p[len++] = item;
+    p[len] = '\0';
+    return p;
+}
+
 vertices ownedVertices(void, game g){
     vertices out = malloc(sizeof(struct _vertices));
     out->campuses = malloc(sizeof(path) * 54);
@@ -67,14 +93,14 @@ vertices ownedVertices(void, game g){
     q.tail = 0;
     q.data = malloc(sizeof(path) * 10000);
     path cur = {0};
-    push(q, cur);
+    push(&q, cur);
     
     int seen[6][6][6] = {{{0}}}; //initialise seen
     
     while(!empty(q)){
         //load paths and coordinate from queue
-        cur = peek(q);
-        pop(q);
+        cur = peek(&q);
+        pop(&q);
         coordinate temp = coordinateFromPath(cur);
         
         //check item is on the array (segfault protection)
@@ -84,8 +110,8 @@ vertices ownedVertices(void, game g){
                 
                 //add to seen list and children to queue
                 seen[temp.x][temp.y][temp.z] = 1;
-                push(q, append(cur, 'L'));
-                push(q, append(cur, 'R'));
+                push(&q, append(cur, 'L'));
+                push(&q, append(cur, 'R'));
                 
                 //test legality
                 int valid = FALSE;
@@ -99,7 +125,7 @@ vertices ownedVertices(void, game g){
                 if(valid){
                     //adds item to out if owned
                     if(getCampus(g, cur) = getWhoseTurn(g)){
-                        out->campuses[++len];
+                        out->campuses[len++];
                     }
                 }
             }
