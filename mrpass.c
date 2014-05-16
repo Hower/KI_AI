@@ -65,31 +65,38 @@ vertices ownedVertices(void, game g){
     q.head = 0;
     q.tail = 0;
     q.data = malloc(sizeof(path) * 10000);
-    path tempa = {0};
-    push(q, tempa);
+    path cur = {0};
+    push(q, cur);
     
     int seen[6][6][6] = {{{0}}}; //initialise seen
     
     while(!empty(q)){
         //load paths and coordinate from queue
-        tempa = peek(q);
+        cur = peek(q);
         pop(q);
-        coordinate tempb = coordinateFromPath(tempa);
-
-        if(tempb.x >= 0 && tempb.y >= 0 && tempb.z >= 0 && tempb.x < 6 && tempb.y < 6 && tempb.z < 6){ //check item is on the array (segfault protection)
+        coordinate temp = coordinateFromPath(cur);
+        
+        //check item is on the array (segfault protection)
+        if(temp.x >= 0 && temp.y >= 0 && temp.z >= 0 && temp.x < 6 && temp.y < 6 && temp.z < 6){  
             
-            if(seen[tempb.x][tempb.y][temp.z]){ //check the vertex has not been seen before
+            if(seen[temp.x][temp.y][temp.z]){ //check the vertex has not been seen before
                 
                 //add to seen list and children to queue
-                seen[tempb.x][temp.y][temp.z] = 1;
-                push(append(p,'L'));
-                push(append(p,'R'));
+                seen[temp.x][temp.y][temp.z] = 1;
+                push(q, append(cur, 'L'));
+                push(q, append(cur, 'R'));
                 
                 //test legality
-                int valid = TRUE;
+                int valid = FALSE;
                 action a;
-                a.destination = 
+                a.destination = cur; 
                 a.actionCode = BUILD_CAMPUS;
+                valid = valid || isLegalAction(g, a);
+                a.actionCode = BUILD_GO8;
+                valid = valid || isLegalAction(g, a);
+                
+                if(valid){
+                    if(getCampus(g, cur) = getWhoseTurn(g)){
 
             }
         }
