@@ -13,11 +13,6 @@
 #include "Game.h"
 #include "mechanicalTurk.h"
 
-struct _vertices{
-    int len;
-    *path campuses;
-};
-
 typedef struct _coordinate {
     int x, y, z;
 } coordinate;
@@ -38,6 +33,10 @@ void pop(queue q);//removes the item at the front of the queue
 path peek(queue q);//returns the item at the front of the queue
 int empty(queue q);//returns whether queue is empty
 path append(path p, char item);//adds item to the end of p
+
+int main (void){
+    return 0;
+}
 
 action decideAction (Game g) {
 
@@ -106,7 +105,7 @@ vertices ownedVertices(void, game g){
         }
     }
     
-    free(queue->data)
+    free(queue->data);
     return out;
 }
 
