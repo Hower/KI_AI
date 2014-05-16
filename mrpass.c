@@ -32,7 +32,7 @@ typedef struct _vertices *vertices;
 
 coordinate coordinateFromPath(path requestPath);
 int directionToIndex(char direction);
-vertices ownedVertices(void);
+vertices ownedVertices(void, game g);
 void push(queue q, path item);
 void pop(queue q);
 path peek(queue q);
@@ -56,32 +56,47 @@ action decideAction (Game g) {
     return nextAction;
 }
 
-vertices ownedVertices(void){
+vertices ownedVertices(void, game g){
     vertices out = malloc(sizeof(struct _vertices));
     vertices->campuses = malloc(sizeof(path) * 54);
-
+    
+    //initialise queue
     queue q;
     q.head = 0;
     q.tail = 0;
-    q.data = malloc(sizeof(path)*10000);
-
-    int seen[6][6][6] = {{{0}}};
-    
+    q.data = malloc(sizeof(path) * 10000);
     path tempa = {0};
     push(q, tempa);
     
+    int seen[6][6][6] = {{{0}}}; //initialise seen
+    
     while(!empty(q)){
+        //load paths and coordinate from queue
         tempa = peek(q);
         pop(q);
-        
         coordinate tempb = coordinateFromPath(tempa);
-        if(tempb.x >= 0 && tempb.y >= 0 && tempb.z >= 0 && tempb.x < 6 && tempb.y < 6 && tempb.z < 6){
-            if(seen[tempb.x][tempb.y][temp.z]){
-                seen[tempb.x][temp.y][temp.z] = 1;
+
+        if(tempb.x >= 0 && tempb.y >= 0 && tempb.z >= 0 && tempb.x < 6 && tempb.y < 6 && tempb.z < 6){ //check item is on the array (segfault protection)
+            
+            if(seen[tempb.x][tempb.y][temp.z]){ //check the vertex has not been seen before
                 
+                //add to seen list and children to queue
+                seen[tempb.x][temp.y][temp.z] = 1;
+                push(append(p,'L'));
+                push(append(p,'R'));
+                
+                //test legality
+                int valid = TRUE;
+                action a;
+                a.destination = 
+                a.actionCode = BUILD_CAMPUS;
+
             }
-
-
+        }
+    }
+    
+    free(queue->data)
+    return out;
 }
 
 int directionToIndex(char direction) {
