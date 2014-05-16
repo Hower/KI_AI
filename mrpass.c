@@ -17,6 +17,8 @@ int main(void){
     return 0;
 }
 
+*path ownedVertices(void);
+
 action decideAction (Game g) {
     
     action nextAction;
