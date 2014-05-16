@@ -32,9 +32,10 @@ typedef struct _vertices *vertices;
 
 coordinate coordinateFromPath(Game g, path requestPath);
 vertices ownedVertices(void);
-void push(queue q, int item);
+void push(queue q, path item);
 void pop(queue q);
 path peek(queue q);
+int empty(queue q);
 
 action decideAction (Game g) {
 
@@ -61,6 +62,18 @@ vertices ownedVertices(void){
     q.head = 0;
     q.tail = 0;
     q.data = malloc(sizeof(path)*10000);
+
+    int seen[6][6][6] = {{{0}}};
+    
+    path tempa = {0};
+    push(q, tempa);
+    
+    while(!empty(q)){
+        tempa = peek(q);
+        pop(q);
+        
+        coordinate tempb = coordinateFromPath(tempa);
+
 
 }
 
