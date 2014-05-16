@@ -30,7 +30,8 @@ typedef struct _queue{
 
 typedef struct _vertices *vertices;
 
-coordinate coordinateFromPath(Game g, path requestPath);
+coordinate coordinateFromPath(path requestPath);
+int directionToIndex(char direction);
 vertices ownedVertices(void);
 void push(queue q, path item);
 void pop(queue q);
@@ -83,7 +84,24 @@ vertices ownedVertices(void){
 
 }
 
-coordinate coordinateFromPath(Game g, path requestPath) {
+int directionToIndex(char direction) {
+    int returnValue;
+    if (direction == 'L') {
+        returnValue = 0;
+    }
+    else if (direction == 'R') {
+        returnValue = 1;
+    }
+    else if (direction == 'B') {
+        returnValue = 2;
+    }
+    else {
+        returnValue = -1;
+    }
+    return returnValue;
+}
+
+coordinate coordinateFromPath(path requestPath) {
     int curOrientation = DOWN_RIGHT;
     char curDirection;
     coordinate coord;
@@ -127,7 +145,6 @@ coordinate coordinateFromPath(Game g, path requestPath) {
     int updateCoord, index;
     int x, y, z;
     int update;
-    Vertex curVertex;
     while (count < pathLen) {
         curDirection = requestPath[count];
         index = directionToIndex(curDirection);
@@ -154,14 +171,6 @@ coordinate coordinateFromPath(Game g, path requestPath) {
         y = coord.y;
         z = coord.z;
         printf("%d %d %d\n", x, y, z);
-        curVertex = g->map[x][y][z];
-        assert(getID(curVertex) != -1);
-        assert(x < MAX_COORDINATE);
-        assert(y < MAX_COORDINATE);
-        assert(z < MAX_COORDINATE);
-        assert(x >= 0);
-        assert(y >= 0);
-        assert(z >= 0);
         curOrientation = orientationTable[curOrientation][index][1];
         count++;
     }
