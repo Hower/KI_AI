@@ -2,7 +2,7 @@
  *  Mr Pass.  Brain the size of a planet!
  *
  *  Proundly Created by Richard Buckland
- *  Share Freely Creative Commons SA-BY-NC 3.0. 
+ *  Share Freely Creative Commons SA-BY-NC 3.0.
  *
  */
 
@@ -18,21 +18,25 @@ struct _vertices{
     *path campuses;
 };
 
+typedef struct _coordinate {
+    int x, y, z;
+} coordinate;
+
 typedef struct _vertices *vertices;
 
 vertices ownedVertices(void);
 
 action decideAction (Game g) {
-    
+
     action nextAction;
     int player = getWhoseTurn(g);
     nextAction.actionCode = PASS;
-    
+
     int valid;
     valid = getStudents(g, player, STUDENT_MJ);
     valid *= getStudents(g, player, STUDENT_MMONEY);
     valid *= getStudents(g, player, STUDENT_MTV);
-    
+
     if(valid){
         nextAction.actionCode = START_SPINOFF;
     }
@@ -40,4 +44,88 @@ action decideAction (Game g) {
 }
 
 vertices ownedVertices(void){
-    
+
+coordinate coordinateFromPath(Game g, path requestPath) {
+    int curOrientation = DOWN_RIGHT;
+    char curDirection;
+    coordinate coord;
+    coord.x = 2;
+    coord.y = 0;
+    coord.z = 0;
+    int count = 0;
+    int pathLen = strlen(requestPath);
+    int orientationTable[6][3][2] = {
+        {
+            {X, ACROSS_RIGHT},
+            {Z, DOWN_LEFT},
+            {-Y, UP_LEFT}
+        },
+        {
+            {-Z, UP_RIGHT},
+            {Y, DOWN_RIGHT},
+            {-X, ACROSS_LEFT}
+        },
+        {
+            {-Y, UP_LEFT},
+            {X, ACROSS_RIGHT},
+            {Z, DOWN_LEFT}
+        },
+        {
+            {-X, ACROSS_LEFT},
+            {-Z, UP_RIGHT},
+            {Y, DOWN_RIGHT}
+        },
+        {
+            {Z, DOWN_LEFT},
+            {-Y, UP_RIGHT},
+            {X, ACROSS_RIGHT}
+        },
+        {
+            {Y, DOWN_RIGHT},
+            {-X, ACROSS_LEFT},
+            {-Z, UP_RIGHT}
+        }
+    };
+    int updateCoord, index;
+    int x, y, z;
+    int update;
+    Vertex curVertex;
+    while (count < pathLen) {
+        curDirection = requestPath[count];
+        index = directionToIndex(curDirection);
+        updateCoord = orientationTable[curOrientation][index][0];
+
+        if (updateCoord > 0) {
+            update = 1;
+        }
+        else {
+            update = -1;
+        }
+
+        if (abs(updateCoord) == X) {
+            coord.x += update;
+        }
+        else if (abs(updateCoord) == Y) {
+            coord.y += update;
+        }
+        else {
+            coord.z += update;
+        }
+        // check that the coordinate we are on exists
+        x = coord.x;
+        y = coord.y;
+        z = coord.z;
+        printf("%d %d %d\n", x, y, z);
+        curVertex = g->map[x][y][z];
+        assert(getID(curVertex) != -1);
+        assert(x < MAX_COORDINATE);
+        assert(y < MAX_COORDINATE);
+        assert(z < MAX_COORDINATE);
+        assert(x >= 0);
+        assert(y >= 0);
+        assert(z >= 0);
+        curOrientation = orientationTable[curOrientation][index][1];
+        count++;
+    }
+    return coord;
+}
