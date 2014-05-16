@@ -18,7 +18,6 @@ struct _vertices{
     *path campuses;
 };
 
-
 typedef struct _coordinate {
     int x, y, z;
 } coordinate;
@@ -31,6 +30,7 @@ typedef struct _queue{
 
 typedef struct _vertices *vertices;
 
+coordinate coordinateFromPath(Game g, path requestPath);
 vertices ownedVertices(void);
 void push(queue q, int item);
 void pop(queue q);
@@ -61,6 +61,7 @@ vertices ownedVertices(void){
     q.head = 0;
     q.tail = 0;
     q.data = malloc(sizeof(path)*10000);
+
 }
 
 coordinate coordinateFromPath(Game g, path requestPath) {
