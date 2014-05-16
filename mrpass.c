@@ -97,6 +97,7 @@ vertices ownedVertices(void, game g){
                 valid = valid || isLegalAction(g, a);
                 
                 if(valid){
+                    //adds item to out if owned
                     if(getCampus(g, cur) = getWhoseTurn(g)){
                         out->campuses[++len];
                     }
