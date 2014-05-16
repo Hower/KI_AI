@@ -36,6 +36,7 @@ void push(queue q, path item);
 void pop(queue q);
 path peek(queue q);
 int empty(queue q);
+path append(path p, char item);
 
 action decideAction (Game g) {
 
@@ -73,6 +74,11 @@ vertices ownedVertices(void){
         pop(q);
         
         coordinate tempb = coordinateFromPath(tempa);
+        if(tempb.x >= 0 && tempb.y >= 0 && tempb.z >= 0 && tempb.x < 6 && tempb.y < 6 && tempb.z < 6){
+            if(seen[tempb.x][tempb.y][temp.z]){
+                seen[tempb.x][temp.y][temp.z] = 1;
+                
+            }
 
 
 }
