@@ -13,11 +13,14 @@
 #include "Game.h"
 #include "mechanicalTurk.h"
 
-int main(void){
-    return 0;
-}
+struct _vertices{
+    int len;
+    *path campuses;
+};
 
-*path ownedVertices(void);
+typedef struct _vertices *vertices;
+
+vertices ownedVertices(void);
 
 action decideAction (Game g) {
     
@@ -35,3 +38,6 @@ action decideAction (Game g) {
     }
     return nextAction;
 }
+
+vertices ownedVertices(void){
+    
