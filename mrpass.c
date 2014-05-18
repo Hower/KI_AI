@@ -113,7 +113,7 @@ vertices ownedVertices(void, game g){
                 push(&q, append(cur, 'L'));
                 push(&q, append(cur, 'R'));
                 
-                //test legality
+                //test legality needs fixixng
                 int valid = FALSE;
                 action a;
                 a.destination = cur; 
