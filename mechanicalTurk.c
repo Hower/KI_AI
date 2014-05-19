@@ -14,9 +14,16 @@
 #include "Game.h"
 #include "mechanicalTurk.h"
 
+#define DOWN_RIGHT   0
+#define ACROSS_RIGHT 1
+#define UP_RIGHT     2
+#define UP_LEFT      3
+#define ACROSS_LEFT  4
+#define DOWN_LEFT    5
+
 struct _vertices{
     int len;
-    *path campuses;
+    char **campuses;
 };
 
 typedef struct _coordinate {
@@ -24,7 +31,7 @@ typedef struct _coordinate {
 } coordinate;
 
 typedef struct _queue{
-    *path data;
+    char **data;
     int head;
     int tail;
 } queue;
@@ -33,12 +40,16 @@ typedef struct _vertices *vertices;
 
 coordinate coordinateFromPath(path requestPath);
 int directionToIndex(char direction);
-vertices ownedVertices(void, game g);
+vertices ownedVertices(Game g);
 void push(queue *q, path item);//adds item to the back of the queue
 void pop(queue *q);//removes the item at the front of the queue
-path peek(queue *q);//returns the item at the front of the queue
+char* peek(queue *q);//returns the item at the front of the queue
 int empty(queue *q);//returns whether queue is empty
-path append(path p, char item);//adds item to the end of p
+char* append(path p, char item);//adds item to the end of p
+
+int main(void){
+    return 0;
+}
 
 action decideAction (Game g) {
 
@@ -46,19 +57,46 @@ action decideAction (Game g) {
     int player = getWhoseTurn(g);
     nextAction.actionCode = PASS;
 
-    int valid;
-    valid = getStudents(g, player, STUDENT_MJ);
-    valid *= getStudents(g, player, STUDENT_MMONEY);
-    valid *= getStudents(g, player, STUDENT_MTV);
-
-    if(valid){
+    int mj, mmoney, mtv;
+    mj = getStudents(g, player, STUDENT_MJ);
+    mmoney = getStudents(g, player, STUDENT_MMONEY);
+    mtv = getStudents(g, player, STUDENT_MTV);
+    
+    if(mj && (mmoney && mtv)){
         nextAction.actionCode = START_SPINOFF;
+    
+    }else{
+        int student = STUDENT_BPS;
+        while(student <= STUDENT_MMONEY){
+            if(getStudents(g, player, student) > 3){
+                nextAction.actionCode = RETRAIN_STUDENTS;
+                nextAction.disciplineFrom = student;
+                
+                if(!mj && student != STUDENT_MJ){
+                    
+                    nextAction.disciplineTo = STUDENT_MJ;
+                    break; 
+                }else if(!mmoney && student != STUDENT_MMONEY){
+                    
+                    nextAction.disciplineTo = STUDENT_MMONEY;
+                    break;
+                }else if(!mtv && student != STUDENT_MTV){
+                    
+                    nextAction.disciplineTo = STUDENT_MTV;
+                    break;
+                }else{
+                    
+                    nextAction.actionCode = PASS;
+            }
+            student++;
+        }
     }
+
     return nextAction;
 }
 
 void push(queue *q, path item){
-    q->data[tail++] = item;
+    q->data[q->tail++] = item;
     return;
 }
 
@@ -67,22 +105,22 @@ void pop(queue *q){
     return;
 }
 
-path peek(queue *q){
-    return q->data[head];
+char* peek(queue *q){
+    return q->data[q->head];
 }
 
 int empty(queue *q){
     return q->head == q->tail;
 }
 
-path append(path p, char item){
-    len = strlen(p);
+char* append(path p, char item){
+    int len = strlen(p);
     p[len++] = item;
     p[len] = '\0';
     return p;
 }
 
-vertices ownedVertices(void, game g){
+vertices ownedVertices(Game g){
     vertices out = malloc(sizeof(struct _vertices));
     out->campuses = malloc(sizeof(path) * 54);
     out->len = 0;
@@ -92,12 +130,12 @@ vertices ownedVertices(void, game g){
     q.head = 0;
     q.tail = 0;
     q.data = malloc(sizeof(path) * 10000);
-    path cur = {0};
+    char* cur = {0};
     push(&q, cur);
     
     int seen[6][6][6] = {{{0}}}; //initialise seen
     
-    while(!empty(q)){
+    while(!empty(&q)){
         //load paths and coordinate from queue
         cur = peek(&q);
         pop(&q);
@@ -116,7 +154,7 @@ vertices ownedVertices(void, game g){
                 //test legality needs fixixng
                 int valid = FALSE;
                 action a;
-                a.destination = cur; 
+                a.destination = (path) cur; 
                 a.actionCode = BUILD_CAMPUS;
                 valid = valid || isLegalAction(g, a);
                 a.actionCode = BUILD_GO8;
@@ -124,15 +162,15 @@ vertices ownedVertices(void, game g){
                 
                 if(valid){
                     //adds item to out if owned
-                    if(getCampus(g, cur) = getWhoseTurn(g)){
-                        out->campuses[len++];
+                    if(getCampus(g, cur) == getWhoseTurn(g)){
+                        out->campuses[out->len++] = cur;
                     }
                 }
             }
         }
     }
     
-    free(queue->data);
+    free(q.data);
     return out;
 }
 
