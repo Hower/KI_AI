@@ -21,6 +21,10 @@
 #define ACROSS_LEFT  4
 #define DOWN_LEFT    5
 
+#define X 1
+#define Y 2
+#define Z 3
+
 struct _vertices{
     int len;
     char **campuses;
@@ -38,8 +42,8 @@ typedef struct _queue{
 
 typedef struct _vertices *vertices;
 
-coordinate coordinateFromPath(path requestPath);
-int directionToIndex(char direction);
+static coordinate coordinateFromPath(path requestPath);
+static int directionToIndex(char direction);
 vertices ownedVertices(Game g);
 void push(queue *q, path item);//adds item to the back of the queue
 void pop(queue *q);//removes the item at the front of the queue
@@ -47,9 +51,6 @@ char* peek(queue *q);//returns the item at the front of the queue
 int empty(queue *q);//returns whether queue is empty
 char* append(path p, char item);//adds item to the end of p
 
-int main(void){
-    return 0;
-}
 
 action decideAction (Game g) {
 
@@ -87,6 +88,7 @@ action decideAction (Game g) {
                 }else{
                     
                     nextAction.actionCode = PASS;
+                }
             }
             student++;
         }
@@ -151,14 +153,8 @@ vertices ownedVertices(Game g){
                 push(&q, append(cur, 'L'));
                 push(&q, append(cur, 'R'));
                 
-                //test legality needs fixixng
+                //test legality needs fixixng, test locally, do not call isLegalMove
                 int valid = FALSE;
-                action a;
-                a.destination = (path) cur; 
-                a.actionCode = BUILD_CAMPUS;
-                valid = valid || isLegalAction(g, a);
-                a.actionCode = BUILD_GO8;
-                valid = valid || isLegalAction(g, a);
                 
                 if(valid){
                     //adds item to out if owned
@@ -174,7 +170,7 @@ vertices ownedVertices(Game g){
     return out;
 }
 
-int directionToIndex(char direction) {
+static int directionToIndex(char direction) {
     int returnValue;
     if (direction == 'L') {
         returnValue = 0;
@@ -191,7 +187,7 @@ int directionToIndex(char direction) {
     return returnValue;
 }
 
-coordinate coordinateFromPath(path requestPath) {
+static coordinate coordinateFromPath(path requestPath) {
     int curOrientation = DOWN_RIGHT;
     char curDirection;
     coordinate coord;
