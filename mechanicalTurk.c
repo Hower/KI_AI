@@ -1,7 +1,6 @@
 /*
- *  Mr Pass.  Brain the size of a planet!
- *
- *  Proundly Created by Richard Buckland
+ *  Adley, Keerti and Kevin's AI
+ *  Super OP
  *  Share Freely Creative Commons SA-BY-NC 3.0.
  *
  */
@@ -62,31 +61,31 @@ action decideAction (Game g) {
     mj = getStudents(g, player, STUDENT_MJ);
     mmoney = getStudents(g, player, STUDENT_MMONEY);
     mtv = getStudents(g, player, STUDENT_MTV);
-    
+
     if(mj && (mmoney && mtv)){
         nextAction.actionCode = START_SPINOFF;
-    
+
     }else{
         int student = STUDENT_BPS;
         while(student <= STUDENT_MMONEY){
             if(getStudents(g, player, student) > 3){
                 nextAction.actionCode = RETRAIN_STUDENTS;
                 nextAction.disciplineFrom = student;
-                
+
                 if(!mj && student != STUDENT_MJ){
-                    
+
                     nextAction.disciplineTo = STUDENT_MJ;
-                    break; 
+                    break;
                 }else if(!mmoney && student != STUDENT_MMONEY){
-                    
+
                     nextAction.disciplineTo = STUDENT_MMONEY;
                     break;
                 }else if(!mtv && student != STUDENT_MTV){
-                    
+
                     nextAction.disciplineTo = STUDENT_MTV;
                     break;
                 }else{
-                    
+
                     nextAction.actionCode = PASS;
                 }
             }
@@ -134,28 +133,28 @@ vertices ownedVertices(Game g){
     q.data = malloc(sizeof(path) * 10000);
     char* cur = {0};
     push(&q, cur);
-    
+
     int seen[6][6][6] = {{{0}}}; //initialise seen
-    
+
     while(!empty(&q)){
         //load paths and coordinate from queue
         cur = peek(&q);
         pop(&q);
         coordinate temp = coordinateFromPath(cur);
-        
+
         //check item is on the array (segfault protection)
-        if(temp.x >= 0 && temp.y >= 0 && temp.z >= 0 && temp.x < 6 && temp.y < 6 && temp.z < 6){  
-            
+        if(temp.x >= 0 && temp.y >= 0 && temp.z >= 0 && temp.x < 6 && temp.y < 6 && temp.z < 6){
+
             if(seen[temp.x][temp.y][temp.z]){ //check the vertex has not been seen before
-                
+
                 //add to seen list and children to queue
                 seen[temp.x][temp.y][temp.z] = 1;
                 push(&q, append(cur, 'L'));
                 push(&q, append(cur, 'R'));
-                
+
                 //test legality needs fixixng, test locally, do not call isLegalMove
                 int valid = FALSE;
-                
+
                 if(valid){
                     //adds item to out if owned
                     if(getCampus(g, cur) == getWhoseTurn(g)){
@@ -165,7 +164,7 @@ vertices ownedVertices(Game g){
             }
         }
     }
-    
+
     free(q.data);
     return out;
 }
@@ -252,11 +251,9 @@ static coordinate coordinateFromPath(path requestPath) {
         else {
             coord.z += update;
         }
-        // check that the coordinate we are on exists
         x = coord.x;
         y = coord.y;
         z = coord.z;
-        printf("%d %d %d\n", x, y, z);
         curOrientation = orientationTable[curOrientation][index][1];
         count++;
     }
