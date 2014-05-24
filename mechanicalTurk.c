@@ -50,6 +50,9 @@ char* peek(queue *q);//returns the item at the front of the queue
 int empty(queue *q);//returns whether queue is empty
 char* append(path p, char item);//adds item to the end of p
 
+//int main(void){
+//    return 0;
+//}
 
 action decideAction (Game g) {
 
@@ -121,6 +124,11 @@ char* append(path p, char item){
     return p;
 }
 
+int isValid(coordinate coordinates){
+    int validVertices[6][6][6] = {{{0, 0, 1, 1, 0, 0}, {0, 0, 0, 1, 1, 0}, {0, 0, 0, 0, 1, 1}, {0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}}, {{0, 1, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0}, {0, 0, 0, 1, 1, 0}, {0, 0, 0, 0, 1, 1}, {0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0}}, {{1, 1, 0, 0, 0, 0}, {0, 1, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0}, {0, 0, 0, 1, 1, 0}, {0, 0, 0, 0, 1, 1}, {0, 0, 0, 0, 0, 1}}, {{1, 0, 0, 0, 0, 0}, {1, 1, 0, 0, 0, 0}, {0, 1, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0}, {0, 0, 0, 1, 1, 0}, {0, 0, 0, 0, 1, 1}}, {{0, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, 0}, {1, 1, 0, 0, 0, 0}, {0, 1, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0}, {0, 0, 0, 1, 1, 0}}, {{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, 0}, {1, 1, 0, 0, 0, 0}, {0, 1, 1, 0, 0, 0}, {0, 0, 1, 1, 0, 0}}};
+    return validVertices[coordinates.x][coordinates.y][coordinates.z];
+}
+
 vertices ownedVertices(Game g){
     vertices out = malloc(sizeof(struct _vertices));
     out->campuses = malloc(sizeof(path) * 54);
@@ -153,9 +161,8 @@ vertices ownedVertices(Game g){
                 push(&q, append(cur, 'R'));
 
                 //test legality needs fixixng, test locally, do not call isLegalMove
-                int valid = FALSE;
-
-                if(valid){
+                
+                if(isValid(temp)){
                     //adds item to out if owned
                     if(getCampus(g, cur) == getWhoseTurn(g)){
                         out->campuses[out->len++] = cur;
@@ -228,7 +235,6 @@ static coordinate coordinateFromPath(path requestPath) {
         }
     };
     int updateCoord, index;
-    int x, y, z;
     int update;
     while (count < pathLen) {
         curDirection = requestPath[count];
@@ -251,9 +257,6 @@ static coordinate coordinateFromPath(path requestPath) {
         else {
             coord.z += update;
         }
-        x = coord.x;
-        y = coord.y;
-        z = coord.z;
         curOrientation = orientationTable[curOrientation][index][1];
         count++;
     }
