@@ -49,25 +49,53 @@ void pop(queue *q);//removes the item at the front of the queue
 path* peek(queue *q);//returns the item at the front of the queue
 int empty(queue *q);//returns whether queue is empty
 path* append(path p, char item);//adds item to the end of p
-
-//int main(void){
-//    return 0;
-//}
+action makeSpinOff(Game g);
+action makeGO8(Game g, vertices campuses);
+void freeVertices(vertices Vertices);
 
 action decideAction (Game g) {
 
     action nextAction;
-    int player = getWhoseTurn(g);
     nextAction.actionCode = PASS;
+    
+    vertices campuses = ownedVertices(g); 
+   
+    if(campuses->len > 0 && getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8){
+        nextAction = makeGO8(g, campuses);
+    
+    }else{
+        nextAction = makeSpinOff(g);
+    
+    }
+    freeVertices(campuses);
+    return nextAction;
+}
 
+void freeVertices(vertices Vertices){
+    
+    int count;
+    for(count = 0; count < Vertices->len; count++){
+        free(Vertices->campuses[count]);
+    }
+    free(Vertices->campuses);
+    free(Vertices);
+    return;
+}
+
+action makeSpinOff(Game g){
+    
+    action nextAction;
     int mj, mmoney, mtv;
+    int player = getWhoseTurn(g);
     mj = getStudents(g, player, STUDENT_MJ);
     mmoney = getStudents(g, player, STUDENT_MMONEY);
     mtv = getStudents(g, player, STUDENT_MTV);
+    
     if(mj && (mmoney && mtv)){
         nextAction.actionCode = START_SPINOFF;
 
     }else{
+        //retrain students
         int student = STUDENT_BPS;
         while(student <= STUDENT_MMONEY){
             if(getStudents(g, player, student) > 3){
@@ -94,7 +122,67 @@ action decideAction (Game g) {
             student++;
         }
     }
+    return nextAction;
+}
 
+int max(int a, int b){
+    if(a > b) return a;
+    else return b;
+}
+
+action makeGO8(Game g, vertices campuses){
+    
+    action nextAction;
+    int mj, mmoney;
+    int player = getWhoseTurn(g);
+    mj = getStudents(g, player, STUDENT_MJ);
+    mmoney = getStudents(g, player, STUDENT_MTV);
+    
+    if(mj >= 2 && mmoney >= 3){
+        
+        nextAction.actionCode = BUILD_GO8;
+        strcpy(nextAction.destination, *campuses->campuses[0]); //this is a miracle if it works
+    }else{
+        
+        int transferrable = 0, missing = max(0, 2 - mj);
+        int transByStudent[6] = {0};
+        missing += max(0, 3 - mmoney);
+        
+        int student = STUDENT_BPS;
+        while(student <= STUDENT_MMONEY){
+            if(student == STUDENT_MMONEY){
+                transferrable += max(0, (mmoney - 3) / 3);
+                transByStudent[student] = max(0, (mmoney - 3) / 3);
+
+            }else if(student == STUDENT_MJ){
+                transferrable += max(0, (mj - 2) / 3);
+                transByStudent[student] = max(0, (mj - 2) / 3);
+
+            }else{
+                transferrable += getStudents(g, player, student) / 3;
+                transByStudent[student] = getStudents(g, player, student) / 3;
+
+            }
+            student++;
+        }
+        if(transferrable >= missing){
+            nextAction.actionCode = RETRAIN_STUDENTS;
+            student = STUDENT_BPS;
+            while(student <= STUDENT_MMONEY){
+                if(transByStudent[student]){
+                    nextAction.disciplineFrom = student;
+                    break;
+                }
+                student++;
+            }
+            if(mmoney < 3){
+                nextAction.disciplineTo = STUDENT_MMONEY;
+            }else{
+                nextAction.disciplineTo = STUDENT_MJ;
+            }
+        }else
+            nextAction.actionCode = PASS;
+    }
     return nextAction;
 }
 
@@ -172,6 +260,7 @@ vertices ownedVertices(Game g){
                 }
             }
         }
+        free(cur);
     }
 
     free(q.data);
