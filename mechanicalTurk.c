@@ -26,7 +26,7 @@
 
 struct _vertices{
     int len;
-    char **campuses;
+    path **campuses;
 };
 
 typedef struct _coordinate {
@@ -34,7 +34,7 @@ typedef struct _coordinate {
 } coordinate;
 
 typedef struct _queue{
-    char **data;
+    path **data;
     int head;
     int tail;
 } queue;
@@ -44,11 +44,11 @@ typedef struct _vertices *vertices;
 static coordinate coordinateFromPath(path requestPath);
 static int directionToIndex(char direction);
 vertices ownedVertices(Game g);
-void push(queue *q, path item);//adds item to the back of the queue
+void push(queue *q, path *item);//adds item to the back of the queue
 void pop(queue *q);//removes the item at the front of the queue
-char* peek(queue *q);//returns the item at the front of the queue
+path* peek(queue *q);//returns the item at the front of the queue
 int empty(queue *q);//returns whether queue is empty
-char* append(path p, char item);//adds item to the end of p
+path* append(path p, char item);//adds item to the end of p
 
 //int main(void){
 //    return 0;
@@ -64,7 +64,6 @@ action decideAction (Game g) {
     mj = getStudents(g, player, STUDENT_MJ);
     mmoney = getStudents(g, player, STUDENT_MMONEY);
     mtv = getStudents(g, player, STUDENT_MTV);
-
     if(mj && (mmoney && mtv)){
         nextAction.actionCode = START_SPINOFF;
 
@@ -99,7 +98,7 @@ action decideAction (Game g) {
     return nextAction;
 }
 
-void push(queue *q, path item){
+void push(queue *q, path *item){
     q->data[q->tail++] = item;
     return;
 }
@@ -109,7 +108,7 @@ void pop(queue *q){
     return;
 }
 
-char* peek(queue *q){
+path* peek(queue *q){
     return q->data[q->head];
 }
 
@@ -117,11 +116,13 @@ int empty(queue *q){
     return q->head == q->tail;
 }
 
-char* append(path p, char item){
+path* append(path p, char item){
     int len = strlen(p);
-    p[len++] = item;
-    p[len] = '\0';
-    return p;
+    path *new = malloc(sizeof(path));
+    strcpy(*new,p);
+    *new[len++] = item;
+    *new[len] = '\0';
+    return new;
 }
 
 int isValid(coordinate coordinates){
@@ -139,7 +140,8 @@ vertices ownedVertices(Game g){
     q.head = 0;
     q.tail = 0;
     q.data = malloc(sizeof(path) * 10000);
-    char* cur = {0};
+    path *cur = malloc(sizeof(path));
+    *cur[0] = 0;
     push(&q, cur);
 
     int seen[6][6][6] = {{{0}}}; //initialise seen
@@ -148,23 +150,23 @@ vertices ownedVertices(Game g){
         //load paths and coordinate from queue
         cur = peek(&q);
         pop(&q);
-        coordinate temp = coordinateFromPath(cur);
+        coordinate temp = coordinateFromPath(*cur);
 
         //check item is on the array (segfault protection)
         if(temp.x >= 0 && temp.y >= 0 && temp.z >= 0 && temp.x < 6 && temp.y < 6 && temp.z < 6){
 
-            if(seen[temp.x][temp.y][temp.z]){ //check the vertex has not been seen before
+            if(!seen[temp.x][temp.y][temp.z]){ //check the vertex has not been seen before
 
                 //add to seen list and children to queue
                 seen[temp.x][temp.y][temp.z] = 1;
-                push(&q, append(cur, 'L'));
-                push(&q, append(cur, 'R'));
+                push(&q, append(*cur, 'L'));
+                push(&q, append(*cur, 'R'));
 
                 //test legality needs fixixng, test locally, do not call isLegalMove
                 
                 if(isValid(temp)){
                     //adds item to out if owned
-                    if(getCampus(g, cur) == getWhoseTurn(g)){
+                    if(getCampus(g, *cur) == getWhoseTurn(g)){
                         out->campuses[out->len++] = cur;
                     }
                 }
