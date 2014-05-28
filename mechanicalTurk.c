@@ -95,32 +95,53 @@ action makeSpinOff(Game g){
         nextAction.actionCode = START_SPINOFF;
 
     }else{
-        //retrain students
+        
+        int transferrable = 0, missing = max(0, 2 - mj);
+        int transByStudent[6] = {0};
+        missing += max(0, 3 - mmoney);
+        
         int student = STUDENT_BPS;
         while(student <= STUDENT_MMONEY){
-            if(getStudents(g, player, student) > 3){
-                nextAction.actionCode = RETRAIN_STUDENTS;
-                nextAction.disciplineFrom = student;
+            if(student == STUDENT_MMONEY){
+                transferrable += max(0, (mmoney - 1) / 3);
+                transByStudent[student] = max(0, (mmoney - 1) / 3);
 
-                if(!mj && student != STUDENT_MJ){
+            }else if(student == STUDENT_MJ){
+                transferrable += max(0, (mj - 1) / 3);
+                transByStudent[student] = max(0, (mj - 1) / 3);
 
-                    nextAction.disciplineTo = STUDENT_MJ;
-                    break;
-                }else if(!mmoney && student != STUDENT_MMONEY){
+            }else if(student == STUDENT_MTV){
+                transferrable += max(0, (mtv - 1) / 3);
+                transByStudent[student] = max(0, (mtv - 1) / 3);
 
-                    nextAction.disciplineTo = STUDENT_MMONEY;
-                    break;
-                }else if(!mtv && student != STUDENT_MTV){
+            }else{
+                transferrable += getStudents(g, player, student) / 3;
+                transByStudent[student] = getStudents(g, player, student) / 3;
 
-                    nextAction.disciplineTo = STUDENT_MTV;
-                    break;
-                }else{
-
-                    nextAction.actionCode = PASS;
-                }
             }
             student++;
         }
+        if(transferrable >= missing){
+            nextAction.actionCode = RETRAIN_STUDENTS;
+            student = STUDENT_BPS;
+            while(student <= STUDENT_MMONEY){
+                if(transByStudent[student]){
+                    nextAction.disciplineFrom = student;
+                    break;
+                }
+                student++;
+            }
+            if(!mmoney){
+                nextAction.disciplineTo = STUDENT_MMONEY;
+
+            }else if(!mj){
+                nextAction.disciplineTo = STUDENT_MJ;
+            
+            }else{
+                nextAction.disciplineTo = STUDENT_MTV;
+            }
+        }else
+        nextAction.actionCode = PASS;
     }
     return nextAction;
 }
