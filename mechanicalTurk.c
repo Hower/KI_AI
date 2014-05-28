@@ -59,7 +59,8 @@ action decideAction (Game g) {
     nextAction.actionCode = PASS;
     
     vertices campuses = ownedVertices(g); 
-   
+    printf("%d\n", campuses->len);
+    fflush(stdout);
     if(campuses->len > 0 && getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8){
         nextAction = makeGO8(g, campuses);
     
@@ -254,7 +255,8 @@ vertices ownedVertices(Game g){
     push(&q, cur);
 
     int seen[6][6][6] = {{{0}}}; //initialise seen
-
+    printf("beginning search...\n");
+    fflush(stdout);
     while(!empty(&q)){
         //load paths and coordinate from queue
         cur = peek(&q);
@@ -283,7 +285,8 @@ vertices ownedVertices(Game g){
         }
         free(cur);
     }
-
+    printf("finished search\n");
+    fflush(stdout);
     free(q.data);
     return out;
 }
