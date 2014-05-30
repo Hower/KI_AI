@@ -72,7 +72,8 @@ action decideAction (Game g) {
     if (getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8
         && (getGO8s(g, player) != 2)) {
         nextAction = makeGO8(g);
-    }else{
+    }
+    else {
         nextAction = makeSpinOff(g);
 
     }
@@ -83,7 +84,7 @@ action decideAction (Game g) {
 void freeVertices(vertices Vertices){
 
     int count;
-    for(count = 0; count < Vertices->len; count++){
+    for (count = 0; count < Vertices->len; count++) {
         free(Vertices->campuses[count]);
     }
     free(Vertices->campuses);
@@ -91,8 +92,7 @@ void freeVertices(vertices Vertices){
     return;
 }
 
-action makeSpinOff(Game g){
-
+action makeSpinOff(Game g) {
     action nextAction;
     int mj, mmoney, mtv;
     int player = getWhoseTurn(g);
@@ -100,58 +100,61 @@ action makeSpinOff(Game g){
     mmoney = getStudents(g, player, STUDENT_MMONEY);
     mtv = getStudents(g, player, STUDENT_MTV);
 
-    if(mj && (mmoney && mtv)){
+    if (mj && (mmoney && mtv)){
         nextAction.actionCode = START_SPINOFF;
+    }
 
-    }else{
-
+    else {
         int transferrable = 0, missing = max(0, 1 - mj);
         int transByStudent[6] = {0};
         missing += max(0, 1 - mmoney);
         missing += max(0, 1 - mtv);
 
         int student = STUDENT_BPS;
-        while(student <= STUDENT_MMONEY){
-            if(student == STUDENT_MMONEY){
+        while (student <= STUDENT_MMONEY) {
+            if (student == STUDENT_MMONEY) {
                 transferrable += max(0, (mmoney - 1) / 3);
                 transByStudent[student] = max(0, (mmoney - 1) / 3);
 
-            }else if(student == STUDENT_MJ){
+            }
+            else if (student == STUDENT_MJ) {
                 transferrable += max(0, (mj - 1) / 3);
                 transByStudent[student] = max(0, (mj - 1) / 3);
 
-            }else if(student == STUDENT_MTV){
+            }
+            else if(student == STUDENT_MTV) {
                 transferrable += max(0, (mtv - 1) / 3);
                 transByStudent[student] = max(0, (mtv - 1) / 3);
 
-            }else{
+            }
+            else {
                 transferrable += getStudents(g, player, student) / 3;
                 transByStudent[student] = getStudents(g, player, student) / 3;
 
             }
             student++;
         }
-        if(transferrable >= missing){
+        if (transferrable >= missing) {
             nextAction.actionCode = RETRAIN_STUDENTS;
             student = STUDENT_BPS;
-            while(student <= STUDENT_MMONEY){
-                if(transByStudent[student]){
+            while (student <= STUDENT_MMONEY) {
+                if (transByStudent[student]) {
                     nextAction.disciplineFrom = student;
                     break;
                 }
                 student++;
             }
-            if(!mmoney){
+            if (!mmoney) {
                 nextAction.disciplineTo = STUDENT_MMONEY;
-
-            }else if(!mj){
+            }
+            else if (!mj) {
                 nextAction.disciplineTo = STUDENT_MJ;
-
-            }else{
+            }
+            else {
                 nextAction.disciplineTo = STUDENT_MTV;
             }
-        }else{
-
+        }
+        else {
             nextAction.actionCode = PASS;
         }
     }
@@ -198,46 +201,51 @@ action makeGO8(Game g){
                 strcpy(nextAction.destination, C2);
             }
         }
-    }else{
-
+    }
+    else {
         int transferrable = 0, missing = max(0, 2 - mj);
         int transByStudent[6] = {0};
         missing += max(0, 3 - mmoney);
 
         int student = STUDENT_BPS;
-        while(student <= STUDENT_MMONEY){
-            if(student == STUDENT_MMONEY){
+        while (student <= STUDENT_MMONEY) {
+            if (student == STUDENT_MMONEY) {
                 transferrable += max(0, (mmoney - 3) / 3);
                 transByStudent[student] = max(0, (mmoney - 3) / 3);
 
-            }else if(student == STUDENT_MJ){
+            }
+            else if (student == STUDENT_MJ) {
                 transferrable += max(0, (mj - 2) / 3);
                 transByStudent[student] = max(0, (mj - 2) / 3);
 
-            }else{
+            }
+            else {
                 transferrable += getStudents(g, player, student) / 3;
                 transByStudent[student] = getStudents(g, player, student) / 3;
 
             }
             student++;
         }
-        if(transferrable >= missing){
+        if (transferrable >= missing) {
             nextAction.actionCode = RETRAIN_STUDENTS;
             student = STUDENT_BPS;
-            while(student <= STUDENT_MMONEY){
-                if(transByStudent[student]){
+            while (student <= STUDENT_MMONEY) {
+                if (transByStudent[student]) {
                     nextAction.disciplineFrom = student;
                     break;
                 }
                 student++;
             }
-            if(mmoney < 3){
+            if (mmoney < 3) {
                 nextAction.disciplineTo = STUDENT_MMONEY;
-            }else{
+            }
+            else {
                 nextAction.disciplineTo = STUDENT_MJ;
             }
-        }else
+        }
+        else {
             nextAction.actionCode = PASS;
+        }
     }
     return nextAction;
 }
