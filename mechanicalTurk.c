@@ -59,18 +59,19 @@ path* append(path p, char item);//adds item to the end of p
 action makeSpinOff(Game g);
 action makeGO8(Game g);
 void freeVertices(vertices Vertices);
+
 int max(int a, int b);
 
 action decideAction (Game g) {
 
     action nextAction;
     nextAction.actionCode = PASS;
-
-    vertices campuses = ownedVertices(g);
-    printf("%d\n", campuses->len);
-    if(campuses->len > 0 && getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8){
-        nextAction = makeGO8(g, campuses);
-
+    int player = getWhoseTurn(g);
+    // vertices campuses = ownedVertices(g);
+    // printf("%d\n", campuses->len);
+    if (getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8
+        && (getGO8s(g, player) != 2)) {
+        nextAction = makeGO8(g);
     }else{
         nextAction = makeSpinOff(g);
 
