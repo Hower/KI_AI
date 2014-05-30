@@ -52,27 +52,28 @@ path* append(path p, char item);//adds item to the end of p
 action makeSpinOff(Game g);
 action makeGO8(Game g, vertices campuses);
 void freeVertices(vertices Vertices);
+int max(int a, int b);
 
 action decideAction (Game g) {
 
     action nextAction;
     nextAction.actionCode = PASS;
-    
-    vertices campuses = ownedVertices(g); 
+
+    vertices campuses = ownedVertices(g);
     printf("%d\n", campuses->len);
     if(campuses->len > 0 && getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8){
         nextAction = makeGO8(g, campuses);
-    
+
     }else{
         nextAction = makeSpinOff(g);
-    
+
     }
     freeVertices(campuses);
     return nextAction;
 }
 
 void freeVertices(vertices Vertices){
-    
+
     int count;
     for(count = 0; count < Vertices->len; count++){
         free(Vertices->campuses[count]);
@@ -83,24 +84,24 @@ void freeVertices(vertices Vertices){
 }
 
 action makeSpinOff(Game g){
-    
+
     action nextAction;
     int mj, mmoney, mtv;
     int player = getWhoseTurn(g);
     mj = getStudents(g, player, STUDENT_MJ);
     mmoney = getStudents(g, player, STUDENT_MMONEY);
     mtv = getStudents(g, player, STUDENT_MTV);
-    
+
     if(mj && (mmoney && mtv)){
         nextAction.actionCode = START_SPINOFF;
 
     }else{
-        
+
         int transferrable = 0, missing = max(0, 1 - mj);
         int transByStudent[6] = {0};
         missing += max(0, 1 - mmoney);
         missing += max(0, 1 - mtv);
-        
+
         int student = STUDENT_BPS;
         while(student <= STUDENT_MMONEY){
             if(student == STUDENT_MMONEY){
@@ -137,41 +138,41 @@ action makeSpinOff(Game g){
 
             }else if(!mj){
                 nextAction.disciplineTo = STUDENT_MJ;
-            
+
             }else{
                 nextAction.disciplineTo = STUDENT_MTV;
             }
         }else{
-        
+
             nextAction.actionCode = PASS;
         }
     }
     return nextAction;
 }
 
-int max(int a, int b){
+int max(int a, int b) {
     if(a > b) return a;
     else return b;
 }
 
 action makeGO8(Game g, vertices campuses){
-    
+
     action nextAction;
     int mj, mmoney;
     int player = getWhoseTurn(g);
     mj = getStudents(g, player, STUDENT_MJ);
     mmoney = getStudents(g, player, STUDENT_MTV);
-    
+
     if(mj >= 2 && mmoney >= 3){
-        
+
         nextAction.actionCode = BUILD_GO8;
         strcpy(nextAction.destination, *campuses->campuses[0]); //this is a miracle if it works
     }else{
-        
+
         int transferrable = 0, missing = max(0, 2 - mj);
         int transByStudent[6] = {0};
         missing += max(0, 3 - mmoney);
-        
+
         int student = STUDENT_BPS;
         while(student <= STUDENT_MMONEY){
             if(student == STUDENT_MMONEY){
