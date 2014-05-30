@@ -955,3 +955,13 @@ static void freeMap(Vertex*** map){
     free(map);
     return;
 }
+
+int main(int argc, char const *argv[])
+{
+    int disciplines[] = {2,5,3,5,3,1,4,4,1,4,2,3,2,0,3,5,4,2,1};
+    int dice[] = {9,10,8,12,6,5,3,11,3,11,4,6,4,7,9,2,8,10,5};
+    Game g = newGame(disciplines, dice);
+    coordinate test = coordinateFromPath(g, "");
+    printf("%d %d %d\n", test.x, test.y, test.z);
+    return 0;
+}

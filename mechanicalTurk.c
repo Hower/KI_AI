@@ -20,6 +20,13 @@
 #define ACROSS_LEFT  4
 #define DOWN_LEFT    5
 
+#define A1 ""
+#define A2 "LRRLRLRLRLR"
+#define B1 "RRLRL"
+#define B2 "LRLRLRRLRL"
+#define C1 "LRLRL"
+#define C2 "RRLRLLRLRL"
+
 #define X 1
 #define Y 2
 #define Z 3
@@ -50,7 +57,7 @@ path* peek(queue *q);//returns the item at the front of the queue
 int empty(queue *q);//returns whether queue is empty
 path* append(path p, char item);//adds item to the end of p
 action makeSpinOff(Game g);
-action makeGO8(Game g, vertices campuses);
+action makeGO8(Game g);
 void freeVertices(vertices Vertices);
 int max(int a, int b);
 
@@ -155,7 +162,7 @@ int max(int a, int b) {
     else return b;
 }
 
-action makeGO8(Game g, vertices campuses){
+action makeGO8(Game g){
 
     action nextAction;
     int mj, mmoney;
@@ -164,9 +171,32 @@ action makeGO8(Game g, vertices campuses){
     mmoney = getStudents(g, player, STUDENT_MTV);
 
     if(mj >= 2 && mmoney >= 3){
-
         nextAction.actionCode = BUILD_GO8;
-        strcpy(nextAction.destination, *campuses->campuses[0]); //this is a miracle if it works
+        // hard coded campuses yay!
+        if (player == 1) {
+            if (getCampus(g, A1) != GO8_A) {
+                strcpy(nextAction.destination, A1);
+            }
+            else if (getCampus(g, A2) != GO8_A) {
+                strcpy(nextAction.destination, A2);
+            }
+        }
+        else if (player == 2) {
+            if (getCampus(g, B1) != GO8_B) {
+                strcpy(nextAction.destination, B1);
+            }
+            else if (getCampus(g, B2) != GO8_B) {
+                strcpy(nextAction.destination, B2);
+            }
+        }
+        else {
+            if (getCampus(g, C1) != GO8_C) {
+                strcpy(nextAction.destination, C1);
+            }
+            else if (getCampus(g, C2) != GO8_C) {
+                strcpy(nextAction.destination, C2);
+            }
+        }
     }else{
 
         int transferrable = 0, missing = max(0, 2 - mj);
