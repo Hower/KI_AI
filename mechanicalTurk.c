@@ -171,7 +171,7 @@ action makeGO8(Game g){
     int mj, mmoney;
     int player = getWhoseTurn(g);
     mj = getStudents(g, player, STUDENT_MJ);
-    mmoney = getStudents(g, player, STUDENT_MTV);
+    mmoney = getStudents(g, player, STUDENT_MMONEY);
 
     if(mj >= 2 && mmoney >= 3){
         nextAction.actionCode = BUILD_GO8;
