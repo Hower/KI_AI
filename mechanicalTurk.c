@@ -77,7 +77,6 @@ action decideAction (Game g) {
         nextAction = makeSpinOff(g);
 
     }
-    freeVertices(campuses);
     return nextAction;
 }
 
