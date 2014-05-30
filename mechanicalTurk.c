@@ -60,7 +60,6 @@ action decideAction (Game g) {
     
     vertices campuses = ownedVertices(g); 
     printf("%d\n", campuses->len);
-    fflush(stdout);
     if(campuses->len > 0 && getGO8s(g, UNI_A) + getGO8s(g, UNI_B) + getGO8s(g, UNI_C) < 8){
         nextAction = makeGO8(g, campuses);
     
@@ -97,9 +96,10 @@ action makeSpinOff(Game g){
 
     }else{
         
-        int transferrable = 0, missing = max(0, 2 - mj);
+        int transferrable = 0, missing = max(0, 1 - mj);
         int transByStudent[6] = {0};
-        missing += max(0, 3 - mmoney);
+        missing += max(0, 1 - mmoney);
+        missing += max(0, 1 - mtv);
         
         int student = STUDENT_BPS;
         while(student <= STUDENT_MMONEY){
@@ -141,8 +141,10 @@ action makeSpinOff(Game g){
             }else{
                 nextAction.disciplineTo = STUDENT_MTV;
             }
-        }else
-        nextAction.actionCode = PASS;
+        }else{
+        
+            nextAction.actionCode = PASS;
+        }
     }
     return nextAction;
 }
@@ -256,7 +258,6 @@ vertices ownedVertices(Game g){
 
     int seen[6][6][6] = {{{0}}}; //initialise seen
     printf("beginning search...\n");
-    fflush(stdout);
     while(!empty(&q)){
         //load paths and coordinate from queue
         cur = peek(&q);
@@ -273,8 +274,6 @@ vertices ownedVertices(Game g){
                 push(&q, append(*cur, 'L'));
                 push(&q, append(*cur, 'R'));
 
-                //test legality needs fixixng, test locally, do not call isLegalMove
-                
                 if(isValid(temp)){
                     //adds item to out if owned
                     if(getCampus(g, *cur) == getWhoseTurn(g)){
@@ -286,7 +285,6 @@ vertices ownedVertices(Game g){
         free(cur);
     }
     printf("finished search\n");
-    fflush(stdout);
     free(q.data);
     return out;
 }
